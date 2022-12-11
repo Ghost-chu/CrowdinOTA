@@ -1,6 +1,5 @@
 # CrowdinOTA
 
-About
 A vanilla Java library that adapt the Crowdin Over-The-Air Content Delivery with cache and custom language mapping
 support.
 
