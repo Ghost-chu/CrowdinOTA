@@ -1,6 +1,7 @@
 package com.ghostchu.crowdin;
 
 import com.ghostchu.crowdin.exception.OTAException;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,12 @@ class CrowdinOTATest {
         file.delete();
         instance = new CrowdinOTA("https://distributions.crowdin.net/847569d13d22ee803f1cfa7xrm4",
                 file);
+    }
+
+    @AfterAll
+    static void cleanUp() {
+        File file = new File("testCache");
+        file.delete();
     }
 
     @Test
