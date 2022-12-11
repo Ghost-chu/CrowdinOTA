@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class OTAInstance {
@@ -61,12 +62,14 @@ public class OTAInstance {
             throw new OTAException("The manifest field `files` not a array.");
         }
         JsonArray files = filesElement.getAsJsonArray();
+        Map<String, OTAFileInstance> stageMap = new LinkedHashMap<>();
         int index = 0;
         for (JsonElement file : files) {
             String fileName = file.getAsString();
             OTAFileInstance fileInstance = new OTAFileInstance(parent, fileName, index, this.unirest);
-            fileMapping.put(fileName, fileInstance);
+            stageMap.put(fileName, fileInstance);
             index++;
         }
+        this.fileMapping = stageMap;
     }
 }

@@ -14,14 +14,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.logging.Logger;
 
 public class CrowdinOTA {
+    private static final Logger LOG = Logger.getLogger("CrowdinOTA");
     protected final String distributionUrl;
     protected final UnirestInstance unirest;
     protected final File cacheFolder;
     protected JsonObject manifest;
+    /**
+     * The language mapping
+     * CrowdinSyntaxName, Map(Syntax, CustomName)
+     */
     protected Map<String, Map<String, String>> languageMapping;
-
     private OTAInstance otaInstance;
 
     /**
@@ -34,6 +40,8 @@ public class CrowdinOTA {
      */
     public CrowdinOTA(@NotNull String distributionUrl, @NotNull File cacheFolder) throws OTAException {
         this.distributionUrl = distributionUrl;
+        if (this.distributionUrl.endsWith("/"))
+            throw new IllegalArgumentException("Distribution URL should not end with a slash.");
         this.cacheFolder = cacheFolder;
         this.unirest = Unirest.primaryInstance();
         initCacheFolder();
@@ -99,17 +107,39 @@ public class CrowdinOTA {
      * If nothing matches, return crowdinSyntaxCode as-is.
      *
      * @param crowdinSyntaxCode The language code (crowdin name)
-     * @param customSyntaxName  The mapping name (custom name)
+     * @param customSyntax      The mapping name (custom name)
      * @return The mapped language code
      */
     @NotNull
-    public String mapLanguageCode(@NotNull String crowdinSyntaxCode, @NotNull String customSyntaxName) {
-        Map<?, ?> mapping = this.languageMapping.get(crowdinSyntaxCode);
+    public String mapLanguageCode(@NotNull String crowdinSyntaxCode, @NotNull String customSyntax) {
+        Map<String, String> mapping = this.languageMapping.get(crowdinSyntaxCode);
         if (mapping == null) return crowdinSyntaxCode; // Return as-is because no mapping found
-        @SuppressWarnings("unchecked")
-        Map<String, String> customSyntax = (Map<String, String>) mapping.get(customSyntaxName);
-        if (customSyntax == null) return crowdinSyntaxCode; // Return as-is because no custom mapping found
-        return customSyntax.get(crowdinSyntaxCode);
+        String customSyntaxMapped = mapping.get(customSyntax);
+        // Return as-is because no custom mapping found
+        return Objects.requireNonNullElse(customSyntaxMapped, crowdinSyntaxCode);
+    }
+
+    /**
+     * Gets the mapped language code for the given locale.
+     * For example:
+     * "tr": {
+     * "locale": "tr-TR"
+     * }
+     * In this case, give "tr-TR" for customCode and "locale" for customSyntaxName, "tr" will be returns.
+     * If nothing matches, return customCode as-is.
+     * It is the mapLanguage's reserve
+     *
+     * @param customCode   The language code (custom name)
+     * @param customSyntax The custom syntax name
+     * @return The mapped language code
+     */
+    @NotNull
+    public String mapLanguageCustom(@NotNull String customCode, @NotNull String customSyntax) {
+        for (Map.Entry<String, Map<String, String>> entry : this.languageMapping.entrySet()) {
+            String customCodeStored = entry.getValue().get(customSyntax);
+            if (customCodeStored.equals(customCode)) return entry.getKey();
+        }
+        return customCode;
     }
 
     /**
@@ -137,13 +167,12 @@ public class CrowdinOTA {
         }
 
     }
-
-
     /**
      * Fetch metadata from Crowdin and cache in local.
      */
     private void fetchMetadata() throws OTAException {
-        HttpResponse<String> response = unirest.get(this.distributionUrl).asString();
+        LOG.info("Downloading Crowdin distribution manifest from remote server...");
+        HttpResponse<String> response = unirest.get(this.distributionUrl + "/manifest.json").asString();
         if (!response.isSuccess()) {
             throw new OTAException("Failed to get Crowdin distribution manifest: " + response.getStatus());
         }
@@ -164,7 +193,7 @@ public class CrowdinOTA {
             if (!cacheFolder.mkdirs())
                 throw new IllegalStateException(new IOException("Cannot create cache folder."));
         } else {
-            if (cacheFolder.isDirectory())
+            if (!cacheFolder.isDirectory())
                 throw new IllegalStateException(new IOException("Cannot create cache folder, file exists but not a directory."));
         }
     }

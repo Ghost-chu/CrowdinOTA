@@ -22,4 +22,5 @@ public class DigestUtil {
             throw new IllegalStateException("Your Java runtime doesn't support SHA-1 algorithm", e);
         }
     }
+
 }

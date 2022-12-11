@@ -31,7 +31,7 @@ public class OTAFileInstance {
      * Value: Host appended URl
      */
     private Map<String, String> urlMapping;
-    private OTAFileCache fileCache;
+    private final OTAFileCache fileCache;
 
     /**
      * Creates a OTAFileInstance instance.
@@ -61,7 +61,7 @@ public class OTAFileInstance {
      */
     @Nullable
     public String getLocaleContentByCustomCode(@NotNull String customSyntax, @NotNull String customLocaleCode) {
-        return this.parent.mapLanguageCode(customSyntax, customLocaleCode);
+        return getLocaleContentByCrowdinCode(parent.mapLanguageCustom(customLocaleCode, customSyntax));
     }
 
     /**
@@ -91,6 +91,7 @@ public class OTAFileInstance {
         try {
             Set<String> localesNeedDownload = new HashSet<>(checkLocalesUnavailable());
             if (includeExpired) localesNeedDownload.addAll(checkLocalesExpired());
+            LOG.info("Downloading translations for " + localesNeedDownload.size() + " locales...");
             List<Future<?>> futures = new ArrayList<>();
             // Create thread pool
             ExecutorService service = ForkJoinPoolUtil.createExecutorService(threads);
@@ -109,6 +110,7 @@ public class OTAFileInstance {
     }
 
     private void downloadFile(@NotNull String crowdinSyntaxLanguageCode) {
+        LOG.info("Downloading translation for " + crowdinSyntaxLanguageCode + "...");
         String url = urlMapping.get(crowdinSyntaxLanguageCode);
         if (url == null)
             throw new IllegalArgumentException("Invalid crowdinSyntaxLanguageCode: " + crowdinSyntaxLanguageCode);
@@ -116,6 +118,9 @@ public class OTAFileInstance {
         if (response.isSuccess()) {
             // write into cache
             this.fileCache.writeCache(crowdinSyntaxLanguageCode, response.getBody(), this.parent.getTimestamp());
+            LOG.info("Downloaded translation for " + crowdinSyntaxLanguageCode + ".");
+        } else {
+            LOG.warning("Failed to download translation for " + crowdinSyntaxLanguageCode + ": " + response.getStatus());
         }
     }
 
@@ -163,9 +168,10 @@ public class OTAFileInstance {
         if (contentElement == null || !contentElement.isJsonObject()) {
             throw new OTAException("Either content field not found or not a object.");
         }
+        Map<String, String> stageMapping = new LinkedHashMap<>();
         JsonObject content = contentElement.getAsJsonObject();
         for (Map.Entry<String, JsonElement> urlEntry : content.entrySet()) {
-            String crowdinSyntaxCode = urlEntry.getValue().getAsString();
+            String crowdinSyntaxCode = urlEntry.getKey();
             JsonElement pathElement = urlEntry.getValue();
             if (!pathElement.isJsonArray()) {
                 throw new OTAException("The `content.<locale>` object not a array.");
@@ -176,9 +182,10 @@ public class OTAFileInstance {
                 continue;
             }
             String path = fileArray.get(this.fileIndex).getAsString();
-            String url = this.parent.distributionUrl + "/content/" + path + "?timestamp=" + parent.getTimestamp();
-            this.urlMapping.put(crowdinSyntaxCode, url);
+            String url = this.parent.distributionUrl + path + "?timestamp=" + parent.getTimestamp();
+            stageMapping.put(crowdinSyntaxCode, url);
         }
+        this.urlMapping = stageMapping;
     }
 
     /**
