@@ -81,6 +81,16 @@ public class OTAFileInstance {
     }
 
     /**
+     * Gets all available locales in this file.
+     *
+     * @return A collection includes the crowdin locale codes
+     */
+    @NotNull
+    public Collection<String> getAvailableLocales() {
+        return new ArrayList<>(this.urlMapping.keySet());
+    }
+
+    /**
      * Download translation files from Crowdin with Multi-Threaded (I/O Blocking)
      *
      * @param includeExpired Whether to include files which expired, False will only download invalid/not cached files
