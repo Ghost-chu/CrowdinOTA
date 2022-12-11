@@ -43,6 +43,6 @@ We're on Maven Central.
 <dependency>
     <groupId>com.ghostchu.crowdin</groupId>
     <artifactId>crowdinota</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```

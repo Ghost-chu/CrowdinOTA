@@ -6,7 +6,7 @@
 
     <groupId>com.ghostchu.crowdin</groupId>
     <artifactId>crowdinota</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <name>CrowdinOTA</name>
     <description>A vanilla Java library that adapt the Crowdin Over-The-Air Content Delivery with cache and custom

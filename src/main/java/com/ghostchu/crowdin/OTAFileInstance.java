@@ -25,13 +25,13 @@ public class OTAFileInstance {
     private final int fileIndex;
     private final UnirestInstance unirest;
     private final ReentrantLock LOCK = new ReentrantLock();
+    private final OTAFileCache fileCache;
     /**
      * URL Mapping
      * Key: CrowdinSyntax Language Code
      * Value: Host appended URl
      */
     private Map<String, String> urlMapping;
-    private final OTAFileCache fileCache;
 
     /**
      * Creates a OTAFileInstance instance.
@@ -46,7 +46,7 @@ public class OTAFileInstance {
         this.fileName = fileName;
         this.fileIndex = fileIndex;
         this.unirest = unirest;
-        this.LOG = Logger.getLogger("OTAFileInstance-" + fileName + "-" + fileIndex);
+        this.LOG = Logger.getLogger("OTAFileInstance" + "-" + fileIndex);
         this.fileCache = new OTAFileCache(initCacheFolder());
         initUrlMapping();
         downloadFiles(true, 16);
