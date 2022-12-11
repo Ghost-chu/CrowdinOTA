@@ -33,3 +33,16 @@ CrowdinOTA will cache all translations in your cache folder, and it will check t
 expired, it will download the new translation file from Crowdin.
 
 CrowdinOTA also will store the cache file's SHA-1 for validating.
+
+## Maven
+
+We're on Maven Central.
+
+```xml
+
+<dependency>
+    <groupId>com.ghostchu.crowdin</groupId>
+    <artifactId>CrowdinOTA</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
