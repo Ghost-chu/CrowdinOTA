@@ -46,3 +46,7 @@ We're on Maven Central.
     <version>1.0.3</version>
 </dependency>
 ```
+
+## Example Project
+
+[QuickShop-Hikari](https://github.com/Ghost-chu/QuickShop-Hikari/blob/5690651eecfd877e442a7a8f958a6ef896e8edb1/quickshop-bukkit/src/main/java/com/ghostchu/quickshop/localization/text/SimpleTextManager.java#L109) using CrowdinOTA to process the Crowdin distribution.
