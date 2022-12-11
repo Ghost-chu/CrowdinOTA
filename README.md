@@ -19,7 +19,7 @@ public class Test {
         String crowdinFilePath = "/hikari/quickshop-bukkit/src/main/resources/lang/example.yml";
         CrowdinOTA crowdinOTA = new CrowdinOTA(distributionUrl, myCacheFolder);
         // I/O blocking operation, when you create a OTAFileInstance, it will download all translations
-        OTAFileInstance fileInstance = crowdinOTA.getOtaInstance().getFileInstance(crowdinFilePath, autoDownload);
+        OTAFileInstance fileInstance = crowdinOTA.getOtaInstance().getFileInstance(crowdinFilePath);
         // Now get your translations!
         System.out.println(fileInstance.getLocaleContentByCrowdinCode("zh-CN"));
         System.out.println(fileInstance.getLocaleContentByCustomCode("locale", "uk-UA"));
