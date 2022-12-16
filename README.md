@@ -23,6 +23,8 @@ public class Test {
         // Now get your translations!
         System.out.println(fileInstance.getLocaleContentByCrowdinCode("zh-CN"));
         System.out.println(fileInstance.getLocaleContentByCustomCode("locale", "uk-UA"));
+        // Or get all available translations!
+        fileInstance.getAvailableLocales();
     }
 }
 ```
