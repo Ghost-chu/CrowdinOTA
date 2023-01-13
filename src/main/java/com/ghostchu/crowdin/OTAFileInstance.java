@@ -216,4 +216,14 @@ public class OTAFileInstance {
         }
         return newFolder;
     }
+
+    @Override
+    public String toString() {
+        return "OTAFileInstance{" +
+                "fileName='" + fileName + '\'' +
+                ", parent=" + parent +
+                ", fileIndex=" + fileIndex +
+                ", urlMapping=" + urlMapping +
+                '}';
+    }
 }

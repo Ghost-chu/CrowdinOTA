@@ -17,7 +17,7 @@ class CrowdinOTATest {
         File file = new File("testCache");
         file.deleteOnExit();
         file.delete();
-        instance = new CrowdinOTA("https://distributions.crowdin.net/847569d13d22ee803f1cfa7xrm4",
+        instance = new CrowdinOTA("https://crowdinota.hikari.r2.quickshop-powered.top",
                 file);
     }
 
@@ -55,9 +55,9 @@ class CrowdinOTATest {
                   example2:
                     test: "This is a test file for testing the REST response of Crowdin distribution feature, please ignore this file!"
                 """;
-        @SuppressWarnings("DataFlowIssue") String actualContent = instance.getOtaInstance().getFileInstance("/hikari/quickshop-bukkit/src/main/resources/lang/example.yml")
+        @SuppressWarnings("DataFlowIssue") String actualContent = instance.getOtaInstance().getFileInstance("/hikari/crowdin/lang/%locale%/example.yml")
                 .getLocaleContentByCustomCode("locale", "zh-CN");
         //System.out.println(actualContent);
-        Assertions.assertEquals(actualContent, fileContent);
+        Assertions.assertEquals(fileContent, actualContent);
     }
 }
